@@ -64,5 +64,10 @@ var stack_ops = Stack.push<number>(4).bind(_ => Stack.push(5)).bind(
   _ => Stack.pop<number>().bind(
     f => Stack.pop<number>().bind(
       s => Stack.push(f + s))));
+var stack2 : Array<number> = [];
+var stack_ops2 = Stack.push<number>(4).bind(_ => Stack.push(5)).bind(_ => Stack.pop<number>()).bind(
+  f => Stack.pop<number>().bind(s => Stack.push(f + s)));
 stack_ops.run(stack);
+stack_ops2.run(stack2);
 console.log(stack);
+console.log(stack2);
