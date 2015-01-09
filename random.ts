@@ -25,8 +25,9 @@ class RandomUnit<T> implements Random<T> {
   }
 
   lift<S>(f : (v : T) => S) : Random<S> {
-    return new RandomBound(this, (n, v) => new RandomUnit(f(v)));
+    return new RandomBound(this, (_, v) => new RandomUnit(f(v)));
   }
+  
 }
 
 // Represents binding.
@@ -47,7 +48,7 @@ class RandomBound<T, S> implements Random<S> {
   }
 
   lift<U>(f : (v : S) => U) : Random<U> {
-    return new RandomBound(this, (n, v) => new RandomUnit(f(v)));
+    return new RandomBound(this, (_, v) => new RandomUnit(f(v)));
   }
 
 }
