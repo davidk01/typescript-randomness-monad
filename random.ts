@@ -2,7 +2,6 @@
 interface Random<T> {
   run(seed : number) : [number, T];
   bind<S>(f : (n : number, v : T) => Random<S>) : Random<S>;
-  lift<S>(f : (v : T) => S) : Random<S>;
 }
 
 // Represents the unit of the monad.
@@ -24,10 +23,6 @@ class RandomUnit<T> implements Random<T> {
     return new RandomBound(this, f);
   }
 
-  lift<S>(f : (v : T) => S) : Random<S> {
-    return new RandomBound(this, (_, v) => new RandomUnit(f(v)));
-  }
-  
 }
 
 // Represents binding.
@@ -47,10 +42,6 @@ class RandomBound<T, S> implements Random<S> {
     return new RandomBound(this, f);
   }
 
-  lift<U>(f : (v : S) => U) : Random<U> {
-    return new RandomBound(this, (_, v) => new RandomUnit(f(v)));
-  }
-
 }
 
 // Convenience wrapper for generating RandomUnit instances. Should be used
@@ -59,13 +50,15 @@ class Rand {
   static unit<T>(u : T) : Random<T> {
     return new RandomUnit(u);
   }
+  static lift<S, T>(f : (v : S) => T) : (u : Random<S>) => Random<T> {
+    return (u : Random<S>) => u.bind((_, v) => Rand.unit(f(v)));
+  }
 }
 
 // Example
 var rand_string = (Rand.unit('')).bind(
-  (rand, str) => rand > 0.5 ? Rand.unit(str + 'b') : Rand.unit(str + 'a')).lift(
-    x => x == 'a' ? '1' : '2').bind(
-      (rand, str) => Rand.unit(str + 'c'));
+  (rand, str) => rand > 0.5 ? Rand.unit(str + 'b') : Rand.unit(str + 'a')).bind(
+    (rand, str) => Rand.unit(str + 'c'));
 console.log(rand_string.run(1));
 console.log(rand_string.run(2));
 console.log(rand_string.run(3));
