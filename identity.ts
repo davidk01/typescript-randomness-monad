@@ -39,3 +39,9 @@ class Ident {
     return (u : Identity<S>) => u.bind(x => Ident.unit(f(x)));
   }
 }
+
+// Example
+var result = Ident.unit(5).bind(v1 => 
+  Ident.unit(6).bind(v2 => 
+    Ident.unit(v1 + v2)));
+console.log(result.run());
