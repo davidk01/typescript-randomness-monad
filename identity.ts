@@ -40,8 +40,13 @@ class Ident {
   }
 }
 
-// Example
+// Example for basic binding
 var result = Ident.unit(5).bind(v1 => 
   Ident.unit(6).bind(v2 => 
     Ident.unit(v1 + v2)));
+console.log(result.run());
+
+// Example for lifting
+var lifted = Ident.lift((x : number) : number => x + 6);
+var result = lifted(Ident.unit(5));
 console.log(result.run());
